@@ -1,0 +1,10 @@
+UI_EN = {
+    UI_PhunTools_Hour = "Hour",
+    UI_PhunTools_Hours = "Hours",
+    UI_PhunTools_Day = "Day",
+    UI_PhunTools_Days = "Days",
+    UI_PhunTools_Minutes = "Minutes",
+    UI_PhunTools_Minute = "Minute",
+    UI_PhunTools_DaysAndHours = "%1 %2, %3 %4",
+    UI_PhunTools_LessThanHour = "Less than an hour",
+}
