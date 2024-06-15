@@ -1,6 +1,5 @@
 {
     "emeraldwalk.runonsave": {
-
         "autoClearConsole": true,
         "commands": [
             {
@@ -12,8 +11,10 @@
                 "match": "Contents\\.*",
                 "isAsync": true,
                 "cmd": "xcopy ${workspaceFolder}\\Contents\\mods ${env.USERPROFILE}\\Zomboid\\mods /Y /I /E /F"
-            },                   
+            },
         ]
     },
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "github.gitAuthentication": true,
+    "github.gitProtocol": "ssh"
 }
