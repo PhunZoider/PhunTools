@@ -12,7 +12,9 @@ function PhunTools:RunOnceWhenServerEmpties(name, fn)
 end
 
 Events.EveryTenMinutes.Add(function()
-    emptyServerCalculate = true
+    if getOnlinePlayers():size() > 0 then
+        emptyServerCalculate = true
+    end
 end)
 
 Events.OnTickEvenPaused.Add(function()
