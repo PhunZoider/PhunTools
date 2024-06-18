@@ -1,8 +1,8 @@
 if not isServer() then
     return
 end
+require("PhunTools_Util")
 local PhunTools = PhunTools
-
 local emptyServerTickCount = 0
 
 local emptyServerCalculate = false

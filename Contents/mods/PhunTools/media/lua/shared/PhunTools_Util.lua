@@ -37,7 +37,7 @@ end
 --- @param indent string
 function PhunTools:printTable(t, indent)
     indent = indent or ""
-    for key, value in pairs(t) do
+    for key, value in pairs(t or {}) do
         if type(value) == "table" then
             print(indent .. key .. ":")
             PhunTools:printTable(value, indent .. "  ")
@@ -58,7 +58,7 @@ end
 --- @param str string
 --- @param char string
 function PhunTools:endsWith(str, char)
-    return string.sub(str, -1) == char
+    return string.sub(str, string.len(char) * -1) == char
 end
 
 --- shuffles a table
