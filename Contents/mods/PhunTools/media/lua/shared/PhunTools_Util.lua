@@ -3,8 +3,20 @@ local sandbox = SandboxVars
 local string = string
 
 PhunTools = {
-    EvoDays = 0
+    EvoDays = 0,
+    events = {
+        OnPhunServerEmpty = "OnPhunServerEmpty"
+    },
+    hooks = {
+        emptyServerProcess = {}
+    }
 }
+
+for _, event in pairs(PhunTools.events) do
+    if not Events[event] then
+        LuaEventManager.AddEvent(event)
+    end
+end
 
 --- Returns if the xyz coordinates are powered or not
 --- @param xyz table<x=number, y=number, z=number>
@@ -184,10 +196,10 @@ end
 --- loads a table from a file
 --- @param filename string path to the file contained in Lua folder of server
 --- @return table
-function PhunTools:loadTable(filename)
+function PhunTools:loadTable(filename, createIfNotExists)
     local res
     local data = {}
-    local fileReaderObj = getFileReader(filename, false)
+    local fileReaderObj = getFileReader(filename, createIfNotExists == true)
     if not fileReaderObj then
         return nil
     end
@@ -210,6 +222,50 @@ function PhunTools:loadTable(filename)
         return result
     end
 
+end
+
+local logQueue = {}
+
+function PhunTools:addLogEntry(...)
+    local filename = "Phun.log"
+    self:addLogEntryToFile(filename, ...)
+end
+
+function PhunTools:addLogEntryToFile(filename, ...)
+    if not logQueue[filename] then
+        logQueue[filename] = {}
+    end
+    local entry = os.date("%Y-%m-%d %H:%M:%S") .. " - " .. table.concat({...}, "\t")
+    table.insert(logQueue[filename], entry)
+
+end
+
+function PhunTools:doLogs()
+    for filename, entries in pairs(logQueue) do
+        if #entries > 0 then
+            self:appendToFile(filename, entries, true)
+            logQueue[filename] = {}
+        end
+    end
+end
+
+function PhunTools:appendToFile(filename, line, createIfNotExist)
+    if not line then
+        return
+    end
+    local ls = {}
+    if type(line) == "table" then
+        ls = line
+    else
+        ls[1] = line
+    end
+    local fileWriterObj = getFileWriter(filename, createIfNotExist ~= false, true)
+    for _, l in ipairs(ls) do
+        if l and l ~= "" then
+            fileWriterObj:write(l .. "\r\n")
+        end
+    end
+    fileWriterObj:close()
 end
 
 --- saves a table to a file
@@ -504,5 +560,9 @@ end)
 
 Events.EveryHours.Add(function()
     PhunTools.EvoDays = PhunTools:calculateEvoDays()
+end)
+
+Events.EveryTenMinutes.Add(function()
+    PhunTools:doLogs()
 end)
 
