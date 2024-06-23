@@ -360,7 +360,21 @@ function PhunTools:differenceInSeconds(startTime, endTime)
 end
 
 function PhunTools:getWorldAgeDiffAsString(value)
-    return self:timeDifferenceAsText(getGameTime():getWorldAgeHours(), value)
+
+    local hoursAgo = getGameTime():getWorldAgeHours() - value
+
+    if hoursAgo < 1 then
+        return getText("UI_PhunTools_LessThanHour")
+    elseif hoursAgo < 24 then
+        return getText("UI_PhunTools_HoursAgo", math.floor(hoursAgo))
+    else
+        local days = math.floor(hoursAgo / 24)
+        -- local hours = math.floor(hoursAgo % 24)
+        return getText("UI_PhunTools_DaysAgo", days, hours)
+    end
+
+    return
+        self:timeDifferenceAsText(math.floor(getGameTime():getWorldAgeHours() * 60 * 60), math.floor(value * 60 * 60))
 end
 
 function PhunTools:daysAndHoursSince(since)
