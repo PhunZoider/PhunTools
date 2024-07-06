@@ -103,6 +103,31 @@ function PhunTools:deepCopyTable(original)
     return copy
 end
 
+-- Function to merge two tables without mutating the originals
+function PhunTools:mergeTables(tableA, tableB)
+    local mergedTable = {}
+
+    -- Copy entries from tableA to mergedTable
+    for k, v in pairs(tableA or {}) do
+        if type(v) == "table" then
+            mergedTable[k] = self:mergeTables(v, {}) -- Ensure nested tables are copied as well
+        else
+            mergedTable[k] = v
+        end
+    end
+
+    -- Copy entries from tableB to mergedTable, overwriting duplicates from tableA
+    for k, v in pairs(tableB or {}) do
+        if type(v) == "table" then
+            mergedTable[k] = self:mergeTables(v, mergedTable[k] or {}) -- Ensure nested tables are copied as well
+        else
+            mergedTable[k] = v
+        end
+    end
+
+    return mergedTable
+end
+
 --- returns a string representation of a table
 --- @param tbl table
 --- @param nokeys boolean
