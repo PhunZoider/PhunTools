@@ -260,7 +260,7 @@ function PhunTools:addLogEntryToFile(filename, ...)
     if not logQueue[filename] then
         logQueue[filename] = {}
     end
-    local entry = os.date("%Y-%m-%d %H:%M:%S") .. " - " .. table.concat({...}, "\t")
+    local entry = os.date("%Y-%m-%d %H:%M:%S") .. "\t" .. table.concat({...}, "\t")
     table.insert(logQueue[filename], entry)
 
 end
@@ -442,7 +442,7 @@ function PhunTools:splitString(v, sep)
     sep = sep or ","
     local t = {}
     -- print("Splitting " .. tostring(v) .. " with " .. sep)
-    for str in string.gmatch(v, "([^" .. sep .. "]+)") do
+    for str in string.gmatch(v or "", "([^" .. sep .. "]+)") do
         table.insert(t, self:trimString(str))
     end
     return t
