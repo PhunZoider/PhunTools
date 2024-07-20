@@ -41,7 +41,7 @@ function PhunTools:printTable(t, indent)
         if type(value) == "table" then
             print(indent .. key .. ":")
             PhunTools:printTable(value, indent .. "  ")
-        else
+        elseif type(value) ~= "function" then
             print(indent .. key .. ": " .. tostring(value))
         end
     end
