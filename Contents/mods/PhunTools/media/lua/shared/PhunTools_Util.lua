@@ -455,7 +455,7 @@ function PhunTools:debug(...)
             if type(v) == "table" then
                 self:printTable(v)
             else
-                print(v)
+                print(tostring(v))
             end
         end
     end
