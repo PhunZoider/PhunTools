@@ -372,6 +372,68 @@ function PhunTools:timeDifferenceAsText(time1, time2)
 
 end
 
+function PhunTools:timeAgo(fromTime, toTime)
+    -- Default to current time if toTime is not provided
+    toTime = toTime or os.time()
+
+    -- Calculate the difference in seconds
+    local diff = os.difftime(toTime, fromTime)
+
+    -- Define time intervals in seconds
+    local secondsInMinute = 60
+    local secondsInHour = 3600
+    local secondsInDay = 86400
+    local secondsInMonth = 2592000 -- Approximate (30 days)
+    local secondsInYear = 31536000 -- Approximate (365 days)
+
+    -- Calculate time components
+    local years = math.floor(diff / secondsInYear)
+    diff = diff % secondsInYear
+    local months = math.floor(diff / secondsInMonth)
+    diff = diff % secondsInMonth
+    local days = math.floor(diff / secondsInDay)
+    diff = diff % secondsInDay
+    local hours = math.floor(diff / secondsInHour)
+    diff = diff % secondsInHour
+    local minutes = math.floor(diff / secondsInMinute)
+    local seconds = diff % secondsInMinute
+
+    -- Build the result string
+    local timeAgo = {}
+
+    if years > 0 then
+        table.insert(timeAgo, years .. (years == 1 and " year" or " years"))
+    end
+
+    if months > 0 then
+        table.insert(timeAgo, months .. (months == 1 and " month" or " months"))
+    end
+
+    if days > 0 then
+        table.insert(timeAgo, days .. (days == 1 and " day" or " days"))
+    end
+
+    if hours > 0 then
+        table.insert(timeAgo, hours .. (hours == 1 and " hour" or " hours"))
+    end
+
+    if minutes > 0 then
+        table.insert(timeAgo, minutes .. (minutes == 1 and " minute" or " minutes"))
+    end
+
+    if seconds > 0 and #timeAgo == 0 then
+        -- Only include seconds if no larger units are present
+        table.insert(timeAgo, seconds .. (seconds == 1 and " second" or " seconds"))
+    end
+
+    if #timeAgo == 0 then
+        return "Just now"
+    else
+        return table.concat(timeAgo, ", ") .. " ago"
+    end
+
+end
+
 function PhunTools:differenceInMs(startTime, endTime)
     local differenceInMillis = endTime - startTime
     local differenceInSeconds = differenceInMillis
