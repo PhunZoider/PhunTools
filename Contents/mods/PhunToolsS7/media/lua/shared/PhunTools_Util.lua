@@ -446,6 +446,25 @@ function PhunTools:differenceInSeconds(startTime, endTime)
     return string.format("%.2f", differenceInSeconds)
 end
 
+function PhunTools:getTimeDiffAsString(value)
+
+    local secondsAgo = getTimestamp() - value
+
+    if secondsAgo < 60 then
+        return "Less than a minute ago"
+    elseif secondsAgo < 3600 then
+        local minutes = math.floor(secondsAgo / 60)
+        return minutes .. " minute" .. (minutes > 1 and "s" or "") .. " ago"
+    elseif secondsAgo < 86400 then
+        local hours = math.floor(secondsAgo / 3600)
+        return hours .. " hour" .. (hours > 1 and "s" or "") .. " ago"
+    else
+        local days = math.floor(secondsAgo / 86400)
+        return days .. " day" .. (days > 1 and "s" or "") .. " ago"
+    end
+
+end
+
 function PhunTools:getWorldAgeDiffAsString(value)
 
     local hoursAgo = getGameTime():getWorldAgeHours() - value
@@ -457,7 +476,7 @@ function PhunTools:getWorldAgeDiffAsString(value)
     else
         local days = math.floor(hoursAgo / 24)
         -- local hours = math.floor(hoursAgo % 24)
-        return getText("UI_PhunTools_DaysAgo", days, hours)
+        return getText("UI_PhunTools_DaysAgo", days, hoursAgo)
     end
 
     return
@@ -521,6 +540,64 @@ function PhunTools:debug(...)
             end
         end
     end
+end
+
+local function moveEntry(tbl, fromIndex, toIndex)
+    -- Ensure the indices are within the valid range
+    if fromIndex < 1 or fromIndex > #tbl or toIndex < 1 or toIndex > #tbl then
+        return tbl -- Return the table unchanged if indices are out of range
+    end
+
+    -- Extract the entry
+    local entry = table.remove(tbl, fromIndex)
+
+    -- Insert the entry at the new position
+    table.insert(tbl, toIndex, entry)
+
+    return tbl
+end
+
+local function addCharacterPageTab(tabName, pageType)
+    local viewName = tabName .. "View"
+    local upperLayer_ISCharacterInfoWindow_createChildren = ISCharacterInfoWindow.createChildren
+    function ISCharacterInfoWindow:createChildren()
+        upperLayer_ISCharacterInfoWindow_createChildren(self)
+        self[viewName] = pageType:new(0, 8, self.width, self.height - 8, self.playerNum)
+        self[viewName]:initialise()
+        self[viewName].infoText = getText("UI_" .. tabName .. "Panel");
+        self.panel:addView("Character Stats", self[viewName])
+        moveEntry(self.panel.viewList, #self.panel.viewList, 4)
+    end
+
+    local upperLayer_ISCharacterInfoWindow_onTabTornOff = ISCharacterInfoWindow.onTabTornOff
+    function ISCharacterInfoWindow:onTabTornOff(view, window)
+        if self.playerNum == 0 and view == self[viewName] then
+            ISLayoutManager.RegisterWindow('charinfowindow.' .. tabName, ISCollapsableWindow, window)
+        end
+        upperLayer_ISCharacterInfoWindow_onTabTornOff(self, view, window)
+
+    end
+
+    local upperLayer_ISCharacterInfoWindow_SaveLayout = ISCharacterInfoWindow.SaveLayout
+    function ISCharacterInfoWindow:SaveLayout(name, layout)
+        upperLayer_ISCharacterInfoWindow_SaveLayout(self, name, layout)
+
+        local tabs = {}
+        if self[viewName].parent == self.panel then
+            table.insert(tabs, tabName)
+            if self[viewName] == self.panel:getActiveView() then
+                layout.current = tabName
+            end
+        end
+        if not layout.tabs then
+            layout.tabs = ""
+        end
+        layout.tabs = layout.tabs .. table.concat(tabs, ',')
+    end
+end
+
+function PhunTools:addCharacterPageTab(tabName, pageType)
+    addCharacterPageTab(tabName, pageType)
 end
 
 local dayLengthsList = {{
