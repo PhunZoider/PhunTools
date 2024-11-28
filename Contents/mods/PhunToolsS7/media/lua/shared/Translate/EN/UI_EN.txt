@@ -9,4 +9,5 @@ UI_EN = {
     UI_PhunTools_Minute = "Minute",
     UI_PhunTools_DaysAndHours = "%1 %2, %3 %4",
     UI_PhunTools_LessThanHour = "Less than an hour",
+    UI_PhunTools_LessThanMinute = "Less than a minute",
 }

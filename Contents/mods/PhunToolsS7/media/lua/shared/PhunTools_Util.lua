@@ -345,7 +345,7 @@ function PhunTools:timeDifference(time1, time2)
     return days, hours, minutes, seconds
 end
 
-function PhunTools:timeDifferenceAsText(time1, time2)
+function PhunTools:timeDifferenceAsText(time1, time2, defaultText)
     local days, hours, minutes, seconds = self:timeDifference(time1, time2)
     local result = {}
     if days > 1 then
@@ -364,10 +364,10 @@ function PhunTools:timeDifferenceAsText(time1, time2)
         table.insert(result, minutes .. " " .. getText("UI_PhunTools_Minute"))
     end
 
-    if #result then
+    if #result > 0 then
         return table.concat(result, " ")
     else
-        return getText("UI_PhunTools_LessThanHour")
+        return defaultText or getText("UI_PhunTools_LessThanHour")
     end
 
 end
@@ -423,6 +423,7 @@ function PhunTools:timeAgo(fromTime, toTime)
 
     if seconds > 0 and #timeAgo == 0 then
         -- Only include seconds if no larger units are present
+        seconds = math.floor(seconds + 0.5)
         table.insert(timeAgo, seconds .. (seconds == 1 and " second" or " seconds"))
     end
 
