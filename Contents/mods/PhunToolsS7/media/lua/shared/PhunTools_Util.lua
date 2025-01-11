@@ -18,6 +18,30 @@ for _, event in pairs(PhunTools.events) do
     end
 end
 
+function PhunTools:onlinePlayers(all)
+
+    local onlinePlayers;
+
+    if not isClient() and not isServer() and not isCoopHost() then
+        onlinePlayers = ArrayList.new();
+        local p = getPlayer()
+        onlinePlayers:add(p);
+    elseif all then
+        onlinePlayers = getOnlinePlayers();
+
+    else
+        onlinePlayers = ArrayList.new();
+        for i = 0, getOnlinePlayers():size() - 1 do
+            local player = getOnlinePlayers():get(i);
+            if player:isLocalPlayer() then
+                onlinePlayers:add(player);
+            end
+        end
+    end
+
+    return onlinePlayers;
+end
+
 --- Returns if the xyz coordinates are powered or not
 --- @param xyz table<x=number, y=number, z=number>
 --- @return boolean
@@ -262,7 +286,6 @@ function PhunTools:addLogEntryToFile(filename, ...)
     end
     local entry = os.date("%Y-%m-%d %H:%M:%S") .. "\t" .. table.concat({...}, "\t")
     table.insert(logQueue[filename], entry)
-
 end
 
 function PhunTools:doLogs()

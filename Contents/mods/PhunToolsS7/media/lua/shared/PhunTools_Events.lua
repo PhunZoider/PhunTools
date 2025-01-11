@@ -1,10 +1,9 @@
-if not isServer() then
+if isClient() then
     return
 end
 require("PhunTools_Util")
 local PhunTools = PhunTools
 local emptyServerTickCount = 0
-
 local emptyServerCalculate = false
 
 function PhunTools:RunOnceWhenServerEmpties(name, fn)
@@ -12,14 +11,17 @@ function PhunTools:RunOnceWhenServerEmpties(name, fn)
 end
 
 Events.EveryTenMinutes.Add(function()
-    if getOnlinePlayers():size() > 0 then
+    local pt = PhunTools
+    print("PhunTools: Checking for empty server " .. tostring(pt))
+    if pt:onlinePlayers():size() > 0 then
         emptyServerCalculate = true
     end
 end)
 
 Events.OnTickEvenPaused.Add(function()
     if emptyServerCalculate and emptyServerTickCount > 100 then
-        if getOnlinePlayers():size() == 0 then
+        local players = PhunTools:onlinePlayers()
+        if players:size() == 0 then
             emptyServerCalculate = false
             print("PhunTools: Server is now empty")
             triggerEvent(PhunTools.events.OnPhunServerEmpty, {})
@@ -29,6 +31,7 @@ Events.OnTickEvenPaused.Add(function()
             end
             PhunTools:doLogs()
         end
+
     elseif emptyServerTickCount > 100 then
         emptyServerTickCount = 0
     else
